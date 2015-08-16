@@ -13,7 +13,7 @@ public class SpecificBehavior : MonoBehaviour
     HexController hexController;
     public HexCoord currentHex;
     public List<HexCoord> eligibleList = new List<HexCoord>();
-
+    public int pieceNumber;     //If 2nd white spider then number will be 2. Used to keep track of specific pieces for board saving and loading.
     public bool covered;
 
 	// Use this for initialization
@@ -22,6 +22,9 @@ public class SpecificBehavior : MonoBehaviour
         boardManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<BoardManager>();
 
         covered = false;
+
+        GetCurrent();
+        pieceNumber = boardManager.DugoutRegistration(currentHex, color, type);
 
         //If already on the board, register piece. Only use this during development
         if (active == BoardManager.Active.Board)

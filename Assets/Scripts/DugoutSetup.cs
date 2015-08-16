@@ -30,12 +30,14 @@ public class DugoutSetup : MonoBehaviour {
                 if (PhotonNetwork.isMasterClient || PhotonNetwork.offlineMode) //Master client creates white pieces. Player ID will be -1 for offline mode
                 {
                     NetworkSpawn(piecePrefabArray[i].name, whitePos, Quaternion.Euler(new Vector3(0f, 0f, -startingRotation)));
+                    
                 }
                 //Place black pieces
                 Vector3 blackPos = new Vector3(xPos, dugoutCenterPoint.y, dugoutCenterPoint.z);
                 if (!PhotonNetwork.isMasterClient || PhotonNetwork.offlineMode) //Other client creates black pieces. Player ID will be -1 for offline mode
                 {
                     NetworkSpawn(piecePrefabArray[i + 5].name, blackPos, Quaternion.Euler(new Vector3(0f, 0f, startingRotation)));
+                    
                 }
 
                 ////Place white pieces
@@ -76,9 +78,11 @@ public class DugoutSetup : MonoBehaviour {
 	}
 	
 	// Used to instantiate network objects
-	void NetworkSpawn(string name, Vector3 pos, Quaternion rot)
+	GameObject NetworkSpawn(string name, Vector3 pos, Quaternion rot)
     {
-        PhotonNetwork.Instantiate(name, pos, rot, 0);
+        GameObject obj = PhotonNetwork.Instantiate(name, pos, rot, 0);
+        //PhotonNetwork.InstantiateSceneObject(name, pos, rot, 0, null);
         //The last argument is an optional group number, feel free to ignore it for now.
+        return obj;
     }
 }

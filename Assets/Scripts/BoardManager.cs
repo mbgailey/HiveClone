@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Settworks.Hexagons;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class BoardManager : MonoBehaviour {
     //Keeps track of which piece is at what location
@@ -22,7 +23,12 @@ public class BoardManager : MonoBehaviour {
     [HideInInspector]   public Dictionary<HexCoord, int> beetleDict = new Dictionary<HexCoord, int>();   //Generic dictionary to hold how many beetles are on top of a given unit
     [HideInInspector]   public List<GameObject> queenList = new List<GameObject>(); //List containing both queen gameobjects
     public List<HexCoord> validMovePieces = new List<HexCoord>();
-
+    public Dictionary<string, HexCoord> boardDict = new Dictionary<string, HexCoord>(); //Generic Dictionary to hold location of all pieecs. This is used for board saving and loading.
+    public List<string> boardList = new List<string>();         //Generic List to hold location of all pieecs. This is used for board saving and loading.
+    // wq1 = white queen 1
+    // bs3 = black spider 3
+    public List<UnitType> whitePieceList = new List<UnitType>(); //Generic List to hold all white pieces. Used for registering
+    public List<UnitType> blackPieceList = new List<UnitType>(); //Generic List to hold all black pieces. Used for registering
     //HexController hexController;
 
     public GameObject lastPieceMoved;
@@ -40,7 +46,7 @@ public class BoardManager : MonoBehaviour {
     {
         //hexController = GameObject.FindGameObjectWithTag("GameController").GetComponent<HexController>();
     }
-	// Used when a piece first enters the board to populate the type and color lists
+	// Used when a piece first enters the board to populate the type and color lists. Return piece number (if the second white spider then returns 2)
 	public void RegisterPiece (HexCoord currentHex, UnitColor color, UnitType type) {
         //int index = GetIndex(currentHex);
 
@@ -51,7 +57,79 @@ public class BoardManager : MonoBehaviour {
         colorDict[currentHex] = color;
         typeDict[currentHex] = type;
         beetleDict[currentHex] = 0; //No beetles on top
+
 	}
+
+    public int DugoutRegistration(HexCoord currentHex, UnitColor color, UnitType type)
+    {
+        int num = 1;
+        if (color == UnitColor.White)
+        {
+            foreach (UnitType member in whitePieceList)
+            {
+                if (member == type)
+                {
+                    num++;
+                }
+            }
+            whitePieceList.Add(type);
+        }
+        if (color == UnitColor.Black)
+        {
+            foreach (UnitType member in blackPieceList)
+            {
+                if (member == type)
+                {
+                    num++;
+                }
+            }
+            blackPieceList.Add(type);
+        }
+
+        boardList.Add(PieceStringHelper(color, type, num));
+        boardDict[PieceStringHelper(color, type, num)] = currentHex;
+
+        return num;
+    }
+
+    string PieceStringHelper(UnitColor color, UnitType type, int num)
+    {
+        string str ="";
+
+        //Start with color
+        if (color == UnitColor.White)
+        {
+            str += "w";
+        }
+        else
+        {
+            str += "b";
+        }
+
+        //Append unit type
+        switch (type)
+        {
+            case UnitType.Ant:
+                str += "a";
+                break;
+            case UnitType.Beetle:
+                str += "b";
+                break;
+            case UnitType.Grasshopper:
+                str += "g";
+                break;
+            case UnitType.Queen:
+                str += "q";
+                break;
+            case UnitType.Spider:
+                str += "s";
+                break;
+        }
+        //Append number
+        str += num.ToString();
+
+        return str;
+    }
 
     // Used when a piece moves to update the lists
     public void MovePiece(HexCoord prevHex, HexCoord newHex, UnitColor color, UnitType type, GameObject obj)
@@ -649,5 +727,45 @@ public class BoardManager : MonoBehaviour {
         }
     }
 
+    public void InitializeBoard()
+    {
 
+    }
+
+    //Format for board properties is list of occupied hexes in this format:
+    //HexID
+    //Piece color
+    //Piece type
+    //If beetle stacked. "ST" This can show multiple pieces stacked
+    //Beetle color
+    //
+
+    public void GetPieceLocations()
+    {
+        GameObject[] whitePcs = GameObject.FindGameObjectsWithTag("WhitePieces");
+        GameObject[] blackPcs = GameObject.FindGameObjectsWithTag("BlackPieces");
+
+        foreach (GameObject pc in whitePcs)
+        {
+            //pc.GetComponent<>();
+        }
+
+    }
+
+    protected internal Hashtable GetBoardAsCustomProperties()
+    {
+        Hashtable customProps = new Hashtable();
+        
+                
+        return customProps;
+    }
+
+
+    protected internal bool SetBoardByCustomProperties(Hashtable customProps, bool calledByEvent)
+    {
+        
+
+
+        return true;
+    }
 }
